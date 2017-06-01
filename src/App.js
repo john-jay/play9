@@ -4,11 +4,9 @@ import './App.css';
 import _ from 'lodash'
 
 const Stars = (props) => {
-    var numberOfStars = Math.floor(Math.random()*9) + 1;
-
     return (
         <div className="col-sm-5">
-          {_.range(numberOfStars).map(i => 
+          {_.range(props.numberOfStars).map(i => 
             <i key={i} className="fa fa-star"></i>
           )}
         </div>
@@ -27,7 +25,9 @@ const Answer = (props) => {
     return (
       <div className="col-sm-5">
         {props.selectedNumbers.map((number, i) =>
-          <span key={i}>{number}</span>
+          <span key={i} onClick={() => props.unselectNumber(number)}>
+            {number}
+          </span>
         )}
       </div>
     );
@@ -51,20 +51,24 @@ const Numbers = (props) => {
       </div>
     );
 };
-
 Numbers.list = _.range(1,10);
 
 class Game extends React.Component {
   state = {
-    selectedNumbers:[]
+    selectedNumbers:[],
+    numberOfStars: Math.floor(Math.random()*9) + 1
   };
-  selectNumber = (clickedNumber) =>
-  {
-    if (this.state.selectedNumbers.indexOf(clickedNumber) == -1){
-      this.setState(prevState => ({
-        selectedNumbers: prevState.selectedNumbers.concat(clickedNumber)
-      }));
-    }
+  selectNumber = (clickedNumber) => {
+    if (this.state.selectedNumbers.indexOf(clickedNumber) >= 0)
+      return;
+    this.setState(prevState => ({
+      selectedNumbers: prevState.selectedNumbers.concat(clickedNumber)
+    }));
+  }
+  unselectNumber = (clickedNumber) =>   {
+    this.setState(prevState => ({
+      selectedNumbers: prevState.selectedNumbers.filter(number => number !== clickedNumber)
+    }));
   }
   render(){
     return (
@@ -72,9 +76,10 @@ class Game extends React.Component {
         <h3>Play Nine</h3>
         <hr />
         <div className="row">
-          <Stars />
+          <Stars numberOfStars={this.state.numberOfStars} />
           <Button />
-          <Answer selectedNumbers={this.state.selectedNumbers} />
+          <Answer selectedNumbers={this.state.selectedNumbers} 
+                unselectNumber={this.unselectNumber} />
         </div>
         <br />
         <Numbers selectedNumbers={this.state.selectedNumbers} 
@@ -99,5 +104,4 @@ class App extends Component {
     );
   }
 }
-
 export default App;
