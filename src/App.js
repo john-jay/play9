@@ -230,6 +230,8 @@ class App extends Component {
         <div className="App-intro">
           <Game />
         </div>
+        <p className="Instructions">The goal is to use all nine numbers. 
+          For each random number of stars, the player needs to pick one or more numbers that sum to the number of stars.</p>
       </div>
     );
   }
