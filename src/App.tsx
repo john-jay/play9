@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, MouseEventHandler } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import _ from 'lodash'
 
 // bit.ly/s-pcs
-var possibleCombinationSum = function (arr, n) {
+var possibleCombinationSum = function (arr: number[], n: number): boolean {
   if (arr.indexOf(n) >= 0) { return true; }
   if (arr[0] > n) { return false; }
   if (arr[arr.length - 1] > n) {
@@ -22,7 +22,10 @@ var possibleCombinationSum = function (arr, n) {
   return false;
 };
 
-const Stars = (props) => {
+type StarProps = {
+  numberOfStars: number;
+}
+const Stars = (props: StarProps) => {
   return (
     <div className="col-sm-5">
       {_.range(props.numberOfStars).map(i =>
@@ -32,7 +35,15 @@ const Stars = (props) => {
   );
 };
 
-const Button = (props) => {
+type ButtonProps = {
+  checkAnswer: any;
+  answerIsCorrect: boolean | null;
+  acceptAnswer: any;
+  selectedNumbers: number[];
+  redraws: number;
+  redraw: any;
+}
+const Button = (props: ButtonProps) => {
   let button;
   switch (props.answerIsCorrect) {
     case true:
@@ -68,7 +79,11 @@ const Button = (props) => {
   );
 };
 
-const Answer = (props) => {
+type AnswerProps = {
+  selectedNumbers: number[];
+  unselectNumber: Function;
+}
+const Answer = (props: AnswerProps) => {
   return (
     <div className="col-sm-5">
       {props.selectedNumbers.map((number, i) =>
@@ -80,8 +95,13 @@ const Answer = (props) => {
   );
 };
 
-const Numbers = (props) => {
-  const numberClassName = (number) => {
+type NumbersProps = {
+  usedNumbers: number[];
+  selectedNumbers: number[];
+  selectNumber: Function;
+}
+const Numbers = (props: NumbersProps) => {
+  const numberClassName = (number: number) => {
     if (props.usedNumbers.indexOf(number) >= 0) {
       return 'used';
     }
@@ -105,7 +125,11 @@ const Numbers = (props) => {
 
 Numbers.list = _.range(1, 10);
 
-const DoneFrame = (props) => {
+type DoneFrameProps = {
+  doneStatus: string;
+  resetGame: MouseEventHandler<HTMLButtonElement>;
+}
+const DoneFrame = (props: DoneFrameProps) => {
   return (
     <div className="text-center">
       <h2>{props.doneStatus}</h2>
@@ -137,14 +161,14 @@ class Game extends React.Component<any, GameState> {
   });
   state = Game.initialState();
   resetGame = () => this.setState(Game.initialState());
-  selectNumber = (clickedNumber) => {
+  selectNumber = (clickedNumber: number) => {
     if (this.state.selectedNumbers.indexOf(clickedNumber) >= 0) { return; }
     this.setState(prevState => ({
       answerIsCorrect: null,
       selectedNumbers: prevState.selectedNumbers.concat(clickedNumber)
     }));
   };
-  unselectNumber = (clickedNumber) => {
+  unselectNumber = (clickedNumber: number) => {
     this.setState(prevState => ({
       answerIsCorrect: null,
       selectedNumbers: prevState.selectedNumbers
@@ -174,7 +198,7 @@ class Game extends React.Component<any, GameState> {
       redraws: prevState.redraws - 1,
     }), this.updateDoneStatus);
   }
-  possibleSolutions = ({ randomNumberOfStars, usedNumbers }) => {
+  possibleSolutions = ({ randomNumberOfStars, usedNumbers }: { randomNumberOfStars: number, usedNumbers: number[] }) => {
     const possibleNumbers = _.range(1, 10).filter(number =>
       usedNumbers.indexOf(number) === -1
     );
@@ -189,7 +213,7 @@ class Game extends React.Component<any, GameState> {
       if (prevState.redraws === 0 && !this.possibleSolutions(prevState)) {
         return { doneStatus: 'Game Over!' };
       }
-      return{doneStatus: null};
+      return { doneStatus: null };
     });
   }
   render() {
