@@ -4,7 +4,7 @@ import './App.css';
 import _ from 'lodash'
 
 // bit.ly/s-pcs
-var possibleCombinationSum = function(arr, n) {
+var possibleCombinationSum = function (arr, n) {
   if (arr.indexOf(n) >= 0) { return true; }
   if (arr[0] > n) { return false; }
   if (arr[arr.length - 1] > n) {
@@ -12,9 +12,9 @@ var possibleCombinationSum = function(arr, n) {
     return possibleCombinationSum(arr, n);
   }
   var listSize = arr.length, combinationsCount = (1 << listSize);
-  for (var i = 1; i < combinationsCount ; i++ ) {
+  for (var i = 1; i < combinationsCount; i++) {
     var combinationSum = 0;
-    for (var j=0 ; j < listSize ; j++) {
+    for (var j = 0; j < listSize; j++) {
       if (i & (1 << j)) { combinationSum += arr[j]; }
     }
     if (n === combinationSum) { return true; }
@@ -34,7 +34,7 @@ const Stars = (props) => {
 
 const Button = (props) => {
   let button;
-  switch(props.answerIsCorrect) {
+  switch (props.answerIsCorrect) {
     case true:
       button =
         <button className="btn btn-success" onClick={props.acceptAnswer}>
@@ -50,8 +50,8 @@ const Button = (props) => {
     default:
       button =
         <button className="btn"
-                onClick={props.checkAnswer}
-                disabled={props.selectedNumbers.length === 0}>
+          onClick={props.checkAnswer}
+          disabled={props.selectedNumbers.length === 0}>
           =
         </button>;
       break;
@@ -61,7 +61,7 @@ const Button = (props) => {
       {button}
       <br /><br />
       <button className="btn btn-warning btn-sm" onClick={props.redraw}
-              disabled={props.redraws === 0}>
+        disabled={props.redraws === 0}>
         <i className="fa fa-refresh"></i> {props.redraws}
       </button>
     </div>
@@ -94,7 +94,7 @@ const Numbers = (props) => {
       <div>
         {Numbers.list.map((number, i) =>
           <span key={i} className={numberClassName(number)}
-                onClick={() => props.selectNumber(number)}>
+            onClick={() => props.selectNumber(number)}>
             {number}
           </span>
         )}
@@ -116,9 +116,18 @@ const DoneFrame = (props) => {
   );
 };
 
-class Game extends React.Component {
-  static randomNumber = () => 1 + Math.floor(Math.random()*9);
-  static initialState = () => ({
+type GameState = {
+  selectedNumbers: number[];
+  randomNumberOfStars: number;
+  usedNumbers: number[];
+  answerIsCorrect: boolean | null;
+  redraws: number;
+  doneStatus: string | null;
+}
+
+class Game extends React.Component<any, GameState> {
+  static randomNumber = () => 1 + Math.floor(Math.random() * 9);
+  static initialState = (): GameState => ({
     selectedNumbers: [],
     randomNumberOfStars: Game.randomNumber(),
     usedNumbers: [],
@@ -139,7 +148,7 @@ class Game extends React.Component {
     this.setState(prevState => ({
       answerIsCorrect: null,
       selectedNumbers: prevState.selectedNumbers
-                                .filter(number => number !== clickedNumber)
+        .filter(number => number !== clickedNumber)
     }));
   };
   checkAnswer = () => {
@@ -165,7 +174,7 @@ class Game extends React.Component {
       redraws: prevState.redraws - 1,
     }), this.updateDoneStatus);
   }
-  possibleSolutions = ({randomNumberOfStars, usedNumbers}) => {
+  possibleSolutions = ({ randomNumberOfStars, usedNumbers }) => {
     const possibleNumbers = _.range(1, 10).filter(number =>
       usedNumbers.indexOf(number) === -1
     );
@@ -180,6 +189,7 @@ class Game extends React.Component {
       if (prevState.redraws === 0 && !this.possibleSolutions(prevState)) {
         return { doneStatus: 'Game Over!' };
       }
+      return{doneStatus: null};
     });
   }
   render() {
@@ -199,20 +209,20 @@ class Game extends React.Component {
         <div className="row">
           <Stars numberOfStars={randomNumberOfStars} />
           <Button selectedNumbers={selectedNumbers}
-                  redraws={redraws}
-                  checkAnswer={this.checkAnswer}
-                  acceptAnswer={this.acceptAnswer}
-                  redraw={this.redraw}
-                  answerIsCorrect={answerIsCorrect} />
+            redraws={redraws}
+            checkAnswer={this.checkAnswer}
+            acceptAnswer={this.acceptAnswer}
+            redraw={this.redraw}
+            answerIsCorrect={answerIsCorrect} />
           <Answer selectedNumbers={selectedNumbers}
-                  unselectNumber={this.unselectNumber} />
+            unselectNumber={this.unselectNumber} />
         </div>
         <br />
         {doneStatus ?
           <DoneFrame resetGame={this.resetGame} doneStatus={doneStatus} /> :
           <Numbers selectedNumbers={selectedNumbers}
-                   selectNumber={this.selectNumber}
-                   usedNumbers={usedNumbers} />
+            selectNumber={this.selectNumber}
+            usedNumbers={usedNumbers} />
         }
       </div>
     );
@@ -230,7 +240,7 @@ class App extends Component {
         <div className="App-intro">
           <Game />
         </div>
-        <p className="Instructions">The goal is to use all nine numbers. 
+        <p className="Instructions">The goal is to use all nine numbers.
           For each random number of stars, the player needs to pick one or more numbers that sum to the number of stars.</p>
       </div>
     );
